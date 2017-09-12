@@ -131,4 +131,6 @@ for obj in lst_build_failed:
 
 print("\nNeeds Review Total: {}".format(len(needs_review)))
 
-print("\nCC: {}".format(", ".join(cc_set)))
+cc_lst = list(cc_set)
+cc_lst.sort()
+print("\nCC ({}): {}".format(len(cc_lst), ", ".join(cc_lst)))
