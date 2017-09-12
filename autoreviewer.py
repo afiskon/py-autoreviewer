@@ -7,6 +7,9 @@ import html
 import sys
 import re
 
+exclude = set([1131, 1001, 528, # updated 2017-09-12
+              1252]) # false positives
+
 headers = {}
 headers['user-agent'] = u'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0; Trident/5.0;  Trident/5.0)'
 
@@ -65,6 +68,8 @@ res = requests.get("https://commitfest.postgresql.org/{}/".format(curr_cf_id), h
 needs_review = {} # id -> title
 for m in re.finditer("""(?s)<tr>\s+<td><a href="([0-9]+)/?">([^<]+)</a></td>\s+<td><span[^>]*>([^<]+)</span></td>""", res.text):
     [p_id, p_title, p_status] = [ m.group(i+1) for i in range(3) ]
+    if p_id in exclude:
+        continue
     p_title = html.unescape(p_title)
     # print("Id: {}, Title: '{}', Status: {}".format(p_id, p_title, p_status))
     if p_status == 'Needs review':
