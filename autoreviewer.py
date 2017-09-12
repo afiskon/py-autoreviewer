@@ -3,6 +3,7 @@
 
 import requests
 import getpass
+import html
 import sys
 import re
 
@@ -64,6 +65,7 @@ res = requests.get("https://commitfest.postgresql.org/{}/".format(curr_cf_id), h
 needs_review = {} # id -> title
 for m in re.finditer("""(?s)<tr>\s+<td><a href="([0-9]+)/?">([^<]+)</a></td>\s+<td><span[^>]*>([^<]+)</span></td>""", res.text):
     [p_id, p_title, p_status] = [ m.group(i+1) for i in range(3) ]
+    p_title = html.unescape(p_title)
     # print("Id: {}, Title: '{}', Status: {}".format(p_id, p_title, p_status))
     if p_status == 'Needs review':
         needs_review[p_id] = p_title
@@ -115,8 +117,7 @@ for url in collect_emails_queue:
         print("Fetching {} ...".format(msg_url))
         msg_res = requests.get(msg_url, headers=headers)
         msg_from = re.search("""(?s)<th>From:</th>\s+<td>([^>]+)</td>""", msg_res.text).group(1)
-        msg_from = msg_from.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"')
-        msg_from = msg_from.replace("(dot)", ".").replace("(at)", "@")
+        msg_from = html.unescape(msg_from).replace("(dot)", ".").replace("(at)", "@")
         url_to_authors[url] += [ msg_from ]
         cc_set.add(msg_from)
 
