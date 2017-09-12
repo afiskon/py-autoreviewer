@@ -75,6 +75,7 @@ for m in re.finditer("""(?s)<tr>\s+<td><a href="([0-9]+)/?">([^<]+)</a></td>\s+<
 res = requests.get("http://commitfest.cputube.org/", headers=headers)
 [cnt_ok, cnt_apply_failed, cnt_build_failed] = [ 0 for _ in range(3) ]
 [lst_ok, lst_apply_failed, lst_build_failed] = [ [] for _ in range(3) ]
+collect_emails_queue = []
 
 for m in re.finditer("""(?s)<tr>\s+<td>#([0-9]+)</td>.*?apply-(passing|failing)\.svg"(.*?)</tr>""", res.text):
     [p_id, p_apply, p_therest] = [ m.group(i+1) for i in range(3) ]
@@ -97,9 +98,24 @@ for m in re.finditer("""(?s)<tr>\s+<td>#([0-9]+)</td>.*?apply-(passing|failing)\
     elif p_apply == 'passing':
         cnt_build_failed += 1
         lst_build_failed += [ obj ]
+        collect_emails_queue += [ url ]
     else:
         cnt_apply_failed += 1
         lst_apply_failed += [ obj ]
+        collect_emails_queue += [ url ]
+
+cc_set = set()
+for url in collect_emails_queue:
+    print("Fetching {} ...".format(url))
+    res = requests.get(url, headers=headers)
+    for m in re.finditer("""<dt><a href="(https://www.postgresql.org/message-id/[^"]+)""", res.text):
+        msg_url = m.group(1)
+        print("Fetching {} ...".format(msg_url))
+        msg_res = requests.get(msg_url, headers=headers)
+        msg_from = re.search("""(?s)<th>From:</th>\s+<td>([^>]+)</td>""", msg_res.text).group(1)
+        msg_from = msg_from.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"')
+        msg_from = msg_from.replace("(dot)", ".").replace("(at)", "@")
+        cc_set.add(msg_from)
 
 print("\n=== OK: {} ===".format(cnt_ok))
 for obj in lst_ok:
@@ -114,3 +130,5 @@ for obj in lst_build_failed:
     print("{} ({})".format(obj["url"], obj["title"]))
 
 print("\nNeeds Review Total: {}".format(len(needs_review)))
+
+print("\nCC: {}".format(", ".join(cc_set)))
