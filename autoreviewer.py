@@ -105,9 +105,11 @@ for m in re.finditer("""(?s)<tr>\s+<td>#([0-9]+)</td>.*?apply-(passing|failing)\
         collect_emails_queue += [ url ]
 
 cc_set = set()
+url_to_authors = {}
 for url in collect_emails_queue:
     print("Fetching {} ...".format(url))
     res = requests.get(url, headers=headers)
+    url_to_authors[url] = []
     for m in re.finditer("""<dt><a href="(https://www.postgresql.org/message-id/[^"]+)""", res.text):
         msg_url = m.group(1)
         print("Fetching {} ...".format(msg_url))
@@ -115,21 +117,29 @@ for url in collect_emails_queue:
         msg_from = re.search("""(?s)<th>From:</th>\s+<td>([^>]+)</td>""", msg_res.text).group(1)
         msg_from = msg_from.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", '"')
         msg_from = msg_from.replace("(dot)", ".").replace("(at)", "@")
+        url_to_authors[url] += [ msg_from ]
         cc_set.add(msg_from)
 
-print("\n=== OK: {} ===".format(cnt_ok))
-for obj in lst_ok:
-    print("{} ({})".format(obj["url"], obj["title"]))
+#print("\n=== OK: {} ===".format(cnt_ok))
+#for obj in lst_ok:
+#    print("{} ({})".format(obj["url"], obj["title"]))
 
 print("\n=== Apply Failed: {} ===".format(cnt_apply_failed))
 for obj in lst_apply_failed:
-    print("{} ({})".format(obj["url"], obj["title"]))
+    end = "s" if len(url_to_authors[obj["url"]]) > 1 else ""
+    print("Title: {1}\nAuthor{3}: {2}\nURL: {0}\n".format(
+        obj["url"], obj["title"], ", ".join(url_to_authors[obj["url"]]), end))
 
 print("\n=== Build Failed: {} ===".format(cnt_build_failed))
 for obj in lst_build_failed:
-    print("{} ({})".format(obj["url"], obj["title"]))
+    end = "s" if len(url_to_authors[obj["url"]]) > 1 else ""
+    print("Title: {1}\nAuthor{3}: {2}\nURL: {0}\n".format(
+        obj["url"], obj["title"], ", ".join(url_to_authors[obj["url"]]), end))
 
 print("\nNeeds Review Total: {}".format(len(needs_review)))
+
+failed_total = cnt_build_failed + cnt_apply_failed
+print("Failed Total: {} ({:.2f} %)".format(failed_total, failed_total * 100.0 / len(needs_review)))
 
 cc_lst = list(cc_set)
 cc_lst.sort()
