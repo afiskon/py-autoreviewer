@@ -111,14 +111,14 @@ url_to_authors = {}
 for url in collect_emails_queue:
     print("Fetching {} ...".format(url))
     res = requests.get(url, headers=headers)
-    url_to_authors[url] = []
+    url_to_authors[url] = set()
     for m in re.finditer("""<dt><a href="(https://www.postgresql.org/message-id/[^"]+)""", res.text):
         msg_url = m.group(1)
         print("Fetching {} ...".format(msg_url))
         msg_res = requests.get(msg_url, headers=headers)
         msg_from = re.search("""(?s)<th>From:</th>\s+<td>([^>]+)</td>""", msg_res.text).group(1)
         msg_from = html.unescape(msg_from).replace("(dot)", ".").replace("(at)", "@")
-        url_to_authors[url] += [ msg_from ]
+        url_to_authors[url].add(msg_from)
         cc_set.add(msg_from)
 
 #print("\n=== OK: {} ===".format(cnt_ok))
@@ -137,9 +137,8 @@ for obj in lst_build_failed:
     print("Title: {1}\nAuthor{3}: {2}\nURL: {0}\n".format(
         obj["url"], obj["title"], ", ".join(url_to_authors[obj["url"]]), end))
 
-print("\nNeeds Review Total: {}".format(len(needs_review)))
-
 failed_total = cnt_build_failed + cnt_apply_failed
+print("Needs Review Total: {}".format(len(needs_review)))
 print("Failed Total: {} ({:.2f} %)".format(failed_total, failed_total * 100.0 / len(needs_review)))
 
 cc_lst = list(cc_set)
