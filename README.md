@@ -3,4 +3,4 @@
 Script that finds patches on the current PostgreSQL commitfest, that don't apply
 or don't compile.
 
-Discussion: https://www.postgresql.org/message-id/flat/20170912100320.GA16111%40e733.localdomain
+Discussion: https://postgr.es/m/CAB7nPqSrHF%2BkNQ6Eq2uy91RcysoCzQr1AjOjkuCn9jvMdJZ6Fw%40mail.gmail.com
