@@ -15,7 +15,7 @@ cfurl = sys.argv[1]
 if not cfurl.endswith("/"):
     cfurl = cfurl + "/"
 
-print("Processing {}...".format(cfurl))
+# print("Processing {}...".format(cfurl))
 
 headers = {}
 headers['user-agent'] = u'Mozilla/5.0 (compatible; MSIE 9.0; ' + \
