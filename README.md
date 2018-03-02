@@ -16,7 +16,7 @@ Now for instant you want to find all patches that have "Ready for Commiter"
 status, apply and pass all tests:
 
 ```sql
-select left(cf.title, 64), cf.url, cf.latest_mail
+select left(cf.title, 64) as title, cf.url, cf.latest_mail
 from commitfest as cf
 left join cputube as ct on ct.url = cf.url
 where status = 'Ready for Committer' and ct.apply_passing and ct.build_passing
@@ -27,7 +27,7 @@ Or, if you want to notify authors whose patches have "Ready for Committer"
 status, but don't apply or don't pass tests:
 
 ```sql
-select left(cf.title, 64), cf.url, cf.latest_mail, ct.apply_passing, ct.build_passing
+select left(cf.title, 64) as title, cf.url, cf.latest_mail, ct.apply_passing, ct.build_passing
 from commitfest as cf
 left join cputube as ct on ct.url = cf.url
 where status = 'Ready for Committer' and (not ct.apply_passing or not ct.build_passing)
