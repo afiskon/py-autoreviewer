@@ -24,7 +24,7 @@ order by latest_mail desc;
 ```
 
 Or, if you want to notify authors whose patches have "Ready for Committer"
-status, but don't apply or dont pass tests:
+status, but don't apply or don't pass tests:
 
 ```sql
 select left(cf.title, 64), cf.url, cf.latest_mail, ct.apply_passing, ct.build_passing
