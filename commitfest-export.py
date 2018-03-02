@@ -50,5 +50,5 @@ for fi in re.finditer(re_str, body):
     INSERT INTO commitfest 
     (url, title, status, authors, reviewers, committer, latest_activity, latest_mail) VALUES
     (""" + ( ",".join(["'{}'"] * 8) ) + """);"""
-    ).format(url, title.replace("'", "\\'").replace("&quot;", '"'),
+    ).format(url, title.replace("&#39;", "'").replace("'", "''").replace("&quot;", '"'),
              status, authors, reviewers, committer, latest_activity, latest_mail))
