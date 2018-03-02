@@ -6,7 +6,7 @@ Usage:
 
 ```
 ./commitfest-export.py https://commitfest.postgresql.org/17/ > commitfest.sql
-./cputube-export.py | tee > cputube.sql
+./cputube-export.py | tee cputube.sql
 
 psql < commitfest.sql
 psql < cputube.sql
