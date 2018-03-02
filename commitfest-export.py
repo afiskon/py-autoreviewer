@@ -28,7 +28,8 @@ re_str = "(?is)<tr>\s*" + ("(<td[^>]*>(.*?)</td>\s*)"*7) + "\s*</tr>"
 counter = 0
 
 print("""
-CREATE TABLE IF NOT EXISTS commitfest
+DROP TABLE IF EXISTS commitfest;
+CREATE TABLE commitfest
 (url text, title text, status text, authors text, reviewers text, committer text,
 latest_activity timestamp, latest_mail timestamp);
 """)

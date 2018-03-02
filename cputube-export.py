@@ -16,7 +16,8 @@ headers['user-agent'] = u'Mozilla/5.0 (compatible; MSIE 9.0; ' + \
 body = requests.get(cputube_url, headers = headers).text
 
 print("""
-CREATE TABLE IF NOT EXISTS cputube (url text, apply_passing bool, build_passing bool);
+DROP TABLE IF EXISTS cputube;
+CREATE TABLE cputube (url text, apply_passing bool, build_passing bool);
 """);
 sys.stdout.flush()
 
