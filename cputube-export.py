@@ -23,7 +23,7 @@ sys.stdout.flush()
 re_str = "(?is)<tr>\s*(<td>(\d+/\d+)</td>)\s*" + ("(<td[^>]*>(.*?)</td>\s*?)"*5) + "(<td>[^>]+</td>)?\s*</tr>"
 for fi in re.finditer(re_str, body):
     [pid, apply_passing, build_passing] = [fi.group(i) for i in [2, 10, 12]]
-    url = commitfest_url + pid;
+    url = commitfest_url + pid + "/";
     apply_passing = (apply_passing.find("apply-passing.svg") > 0)
     if not apply_passing:
         build_passing = False
