@@ -46,7 +46,7 @@ create materialized view reviewers_stat
 
 create materialized view authors_stat
   as select unnest(string_to_array(authors, ', ')) as author,
-     count(*) as cnt
+            count(*) as cnt
      from commitfest
      group by author
      order by cnt desc;
